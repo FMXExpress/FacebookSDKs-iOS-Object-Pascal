@@ -8,6 +8,7 @@ Download the Facebook SDK:
 https://developers.facebook.com/docs/ios/downloads
 
 Copy the following files and rename them:
+```
 AccountKit.framework\AccountKit -> AccountKit.a
 BoltKit.framework\AccountKit -> BoltKit.a
 FBAudienceNetwork.framework\AccountKit -> FBAudienceNetwork.a
@@ -16,5 +17,6 @@ FBSDKCoreKit.framework\AccountKit -> FBSDKCoreKit.a
 FBSDKLoginKit.framework\AccountKit -> FBSDKLoginKit.a
 FBSDKMessengerShareKit.framework\AccountKit -> FBSDKMessengerShareKit.a
 FBSDKShareKit.framework\AccountKit -> FBSDKShareKit.a
+```
 
 Deploy the *.a files with your project.
