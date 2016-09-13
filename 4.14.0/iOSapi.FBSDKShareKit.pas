@@ -19,15 +19,16 @@ uses
   Macapi.CoreFoundation,
   Macapi.CoreServices,
   Macapi.Dispatch,
-  Macapi.Foundation,
+  //Macapi.Foundation,
   Macapi.Mach,
   Macapi.ObjCRuntime,
   Macapi.ObjectiveC,
-  Macapi.QuartzCore,
+  //Macapi.QuartzCore,
   iOSapi.CocoaTypes,
   iOSapi.CoreGraphics,
   iOSapi.FBSDKCoreKit,
   iOSapi.Foundation,
+  FMX.TMSNativeUICore,
   iOSapi.UIKit;
 
 const
@@ -524,6 +525,17 @@ type
     function fromViewController: UIViewController; cdecl;
     procedure setMode(mode: FBSDKShareDialogMode); cdecl;
     function mode: FBSDKShareDialogMode; cdecl;
+    //added from FBSDKSharingDialog
+    function canShow: Boolean; cdecl;
+    function show: Boolean; cdecl;
+    //added from FBSDKSharing
+    procedure setDelegate(delegate: Pointer); cdecl;
+    function delegate: Pointer; cdecl;
+    procedure setShareContent(shareContent: Pointer); cdecl;
+    function shareContent: Pointer; cdecl;
+    procedure setShouldFailOnDataError(shouldFailOnDataError: Boolean); cdecl;
+    function shouldFailOnDataError: Boolean; cdecl;
+    function validateWithError(errorRef: NSError): Boolean; cdecl;
   end;
 
   TFBSDKShareDialog = class(TOCGenericImport<FBSDKShareDialogClass,
@@ -546,12 +558,12 @@ type
     function imageURL: NSURL; cdecl;
     procedure setQuote(quote: NSString); cdecl;
     function quote: NSString; cdecl;
-    function isEqualToShareLinkContent(content: FBSDKShareLinkContent)
-      : Boolean; cdecl;
+    function isEqualToShareLinkContent(content: FBSDKShareLinkContent): Boolean; cdecl;
+    procedure setContentURL(contentURL: NSURL); cdecl;
+    function contentURL: NSURL; cdecl;
   end;
 
-  TFBSDKShareLinkContent = class(TOCGenericImport<FBSDKShareLinkContentClass,
-    FBSDKShareLinkContent>)
+  TFBSDKShareLinkContent = class(TOCGenericImport<FBSDKShareLinkContentClass, FBSDKShareLinkContent>)
   end;
 
   PFBSDKShareLinkContent = Pointer;
@@ -617,6 +629,8 @@ type
     function photos: NSArray; cdecl;
     function isEqualToSharePhotoContent(content: FBSDKSharePhotoContent)
       : Boolean; cdecl;
+    procedure setContentURL(contentURL: NSURL); cdecl;
+    function contentURL: NSURL; cdecl;
   end;
 
   TFBSDKSharePhotoContent = class(TOCGenericImport<FBSDKSharePhotoContentClass,
@@ -824,28 +838,25 @@ function FBSDKShareErrorDomain: NSString;
 // ===== External functions =====
 
 const
-  libFBSDKShareKit =
-    '/System/Library/Frameworks/FBSDKShareKit.framework/FBSDKShareKit';
-function NSStringFromFBSDKAppGroupPrivacy(privacy: FBSDKAppGroupPrivacy)
-  : Pointer { NSString }; cdecl;
+  //libFBSDKShareKit = 'FBSDKShareKit.a';
+  libFBSDKShareKit = '/System/Library/Frameworks/FBSDKShareKit.framework/FBSDKShareKit';
+
+function NSStringFromFBSDKAppGroupPrivacy(privacy: FBSDKAppGroupPrivacy) : Pointer { NSString }; cdecl;
   external libFBSDKShareKit name _PU + 'NSStringFromFBSDKAppGroupPrivacy';
-function NSStringFromFBSDKLikeObjectType(objectType: FBSDKLikeObjectType)
-  : Pointer { NSString }; cdecl;
+function NSStringFromFBSDKLikeObjectType(objectType: FBSDKLikeObjectType) : Pointer { NSString }; cdecl;
   external libFBSDKShareKit name _PU + 'NSStringFromFBSDKLikeObjectType';
-function NSStringFromFBSDKLikeControlAuxiliaryPosition(auxiliaryPosition
-  : FBSDKLikeControlAuxiliaryPosition): Pointer { NSString }; cdecl;
-  external libFBSDKShareKit name _PU +
-  'NSStringFromFBSDKLikeControlAuxiliaryPosition';
-function NSStringFromFBSDKLikeControlHorizontalAlignment(horizontalAlignment
-  : FBSDKLikeControlHorizontalAlignment): Pointer { NSString }; cdecl;
-  external libFBSDKShareKit name _PU +
-  'NSStringFromFBSDKLikeControlHorizontalAlignment';
-function NSStringFromFBSDKLikeControlStyle(style: FBSDKLikeControlStyle)
-  : Pointer { NSString }; cdecl;
+function NSStringFromFBSDKLikeControlAuxiliaryPosition(auxiliaryPosition : FBSDKLikeControlAuxiliaryPosition): Pointer { NSString }; cdecl;
+  external libFBSDKShareKit name _PU + 'NSStringFromFBSDKLikeControlAuxiliaryPosition';
+function NSStringFromFBSDKLikeControlHorizontalAlignment(horizontalAlignment : FBSDKLikeControlHorizontalAlignment): Pointer { NSString }; cdecl;
+  external libFBSDKShareKit name _PU + 'NSStringFromFBSDKLikeControlHorizontalAlignment';
+function NSStringFromFBSDKLikeControlStyle(style: FBSDKLikeControlStyle) : Pointer { NSString }; cdecl;
   external libFBSDKShareKit name _PU + 'NSStringFromFBSDKLikeControlStyle';
-function NSStringFromFBSDKShareDialogMode(dialogMode: FBSDKShareDialogMode)
-  : Pointer { NSString }; cdecl;
+function NSStringFromFBSDKShareDialogMode(dialogMode: FBSDKShareDialogMode) : Pointer { NSString }; cdecl;
   external libFBSDKShareKit name _PU + 'NSStringFromFBSDKShareDialogMode';
+
+//This function is never called (it does not even exist in the library), but it is here to trick Delphi to think that we use the
+//static library and therefore link it into the binary.
+//function FakeLoader: FBSDKShareDialog; cdecl; external libFBSDKShareKit name 'OBJC_CLASS_$_SomeClassName';
 
 implementation
 
